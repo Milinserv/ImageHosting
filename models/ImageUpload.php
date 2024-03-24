@@ -22,8 +22,6 @@ class ImageUpload extends Image {
     {
         if ($this->validate()) {
             foreach ($this->image as $file) {
-                $startSaveImage = microtime(true);
-//                $imageName = '';
                 if ($this->fileExists($this->translit($file->baseName) . '.' . $file->extension)) {
                     $filename = $this->generateFilename($file);
 
@@ -34,7 +32,7 @@ class ImageUpload extends Image {
                     $imageName = $this->translit($this->translit($file->baseName) . '.' . $file->extension);
                 }
 
-                $loadingTime = microtime(true) - $startSaveImage;
+                $loadingTime = date('H:i:s');
                 $create_at = date('Y.m.d');
 
                 $this->saveImage($imageName, $loadingTime, $create_at);

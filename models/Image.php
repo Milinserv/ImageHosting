@@ -47,9 +47,9 @@ class Image extends ActiveRecord
         ];
     }
 
-    public function getAllImage(): array
+    public function getById($id): Image
     {
-        return Image::find()->all();
+        return Image::findOne($id);
     }
 
     public function saveImage($imageName, $loadingTime, $create_at): bool
