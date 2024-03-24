@@ -2,6 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\ArticleSearch;
+use app\models\Image;
+use app\models\ImageSearch;
+use app\models\ImageUpload;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -9,6 +13,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\web\UploadedFile;
 
 class SiteController extends Controller
 {
@@ -61,68 +66,33 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
-    }
+        $searchModel = new ImageSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
+        return $this->render('index',[
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
     /**
-     * Logout action.
+     * Displays uploads image page.
      *
-     * @return Response
+     * @return string | Response
      */
-    public function actionLogout()
+    public function actionUploads(): Response|string
     {
-        Yii::$app->user->logout();
+        $model = new ImageUpload();
 
-        return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
+        if(Yii::$app->request->isPost)
+        {
+            $model->image = UploadedFile::getInstances($model, 'image');
+            if ($model->upload()) {
+                return $this->redirect(['index']);
+            }
         }
-        return $this->render('contact', [
-            'model' => $model,
+        return $this->render('uploadsImage', [
+            'model' => $model
         ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }
