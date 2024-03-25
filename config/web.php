@@ -1,5 +1,9 @@
 <?php
 
+use yii\filters\ContentNegotiator;
+use yii\symfonymailer\Mailer;
+use yii\web\Response;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -14,9 +18,10 @@ $config = [
     ],
     'components' => [
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ],
             'enableCookieValidation' => false,
-
             'enableCsrfValidation' => false,
         ],
         'cache' => [
@@ -30,7 +35,7 @@ $config = [
             'errorAction' => 'site/error',
         ],
         'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
+            'class' => Mailer::class,
             'viewPath' => '@app/mail',
             // send all mails to a file by default.
             'useFileTransport' => true,
@@ -45,11 +50,11 @@ $config = [
             ],
         ],
         'db' => $db,
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
+        'urlManager'  => [
+            'enablePrettyUrl'  => true,
+            'showScriptName'  => false,
+            'enableStrictParsing' => false,
+            'rules' => [['class' => 'yii\rest\UrlRule', 'controller' => 'api'],],
         ],
     ],
     'params' => $params,
