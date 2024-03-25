@@ -2,8 +2,10 @@
 
 namespace app\models;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use ZipArchive;
 
 /**
  * This is the model class for table "image".

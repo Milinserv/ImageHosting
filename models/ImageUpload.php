@@ -3,7 +3,8 @@
 namespace app\models;
 
 use Yii;
-use yii\base\Model;
+use yii\web\Response;
+use ZipArchive;
 
 class ImageUpload extends Image {
 
@@ -12,7 +13,6 @@ class ImageUpload extends Image {
     public function rules()
     {
         return [
-//            [['image'], 'required'],
             [['image'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg', 'maxFiles' => 5],
         ];
     }
@@ -22,16 +22,16 @@ class ImageUpload extends Image {
     {
         if ($this->validate()) {
             foreach ($this->image as $file) {
-                if ($this->fileExists($this->translit($file->baseName) . '.' . $file->extension)) {
+                if ($this->fileExists($this->currentImage($file))) {
                     $filename = $this->generateFilename($file);
 
                     $file->saveAs($this->getFolder() . $filename);
                     $imageName = $filename;
                 } else {
-                    $file->saveAs($this->getFolder() . $this->translit($file->baseName) . '.' . $file->extension);
-                    $imageName = $this->translit($this->translit($file->baseName) . '.' . $file->extension);
+                    $file->saveAs($this->getFolder() . $this->currentImage($file));
+                    $imageName = $this->currentImage($file);
                 }
-
+                var_dump($imageName);
                 $loadingTime = date('H:i:s');
                 $create_at = date('Y.m.d');
 
@@ -42,6 +42,22 @@ class ImageUpload extends Image {
         } else {
             return false;
         }
+    }
+
+    public function download($filename): Response
+    {
+        $extensionPosition = strrpos($filename, '.');
+        $filenameWithoutExtension = substr($filename, 0, $extensionPosition);
+
+        $path = Yii::getAlias('@web') . 'uploads/';
+        $pathImageZipName = $path . 'zip/' . $filenameWithoutExtension . '.zip';
+
+        $zip = new ZipArchive();
+        $zip->open($pathImageZipName, ZipArchive::CREATE);
+        $zip->addFile($path . $filename);
+        $zip->close();
+
+        return Yii::$app->response->sendFile($pathImageZipName);
     }
 
     private function getFolder()
@@ -60,6 +76,11 @@ class ImageUpload extends Image {
         {
             return file_exists($this->getFolder() . $currentImage);
         }
+    }
+
+    public function currentImage($file)
+    {
+        return $this->translit($file->baseName) . '.' . $file->extension;
     }
 
     public function translit($st)

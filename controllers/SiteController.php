@@ -14,6 +14,7 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use yii\web\UploadedFile;
+use ZipArchive;
 
 class SiteController extends Controller
 {
@@ -75,6 +76,16 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionView($id)
+    {
+        $model = new Image();
+        $image = $model->getById($id);
+
+        return $this->render('view', [
+            'image' => $image
+        ]);
+    }
+
     /**
      * Displays uploads image page.
      *
@@ -94,5 +105,12 @@ class SiteController extends Controller
         return $this->render('uploadsImage', [
             'model' => $model
         ]);
+    }
+
+    public function actionDownload($name)
+    {
+        $model = new ImageUpload();
+
+        return $model->download($name);
     }
 }

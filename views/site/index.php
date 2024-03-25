@@ -24,7 +24,7 @@ $this->title = 'My Yii Application';
                 'format' => 'html',
                 'label' => 'Image',
                 'value' => function ($data) {
-                    return Html::img($data->getImage(), ['width' => 200]);
+                    return Html::img($data->getImage(), ['width' => 150, 'height' => 150]);
                 }
             ],
             [
@@ -41,6 +41,7 @@ $this->title = 'My Yii Application';
                 'format' => 'raw',
             ],
             'create_date',
+            'loading_time'
         ],
     ]); ?>
 
