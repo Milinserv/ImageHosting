@@ -30,7 +30,6 @@ class ImageUpload extends Image {
                     $file->saveAs($this->getFolder() . $this->currentImage($file));
                     $imageName = $this->currentImage($file);
                 }
-                var_dump($imageName);
                 $loadingTime = date('H:i:s');
                 $create_at = date('Y.m.d');
 
