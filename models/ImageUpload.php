@@ -17,7 +17,6 @@ class ImageUpload extends Image {
         ];
     }
 
-
     public function upload(): bool
     {
         if ($this->validate()) {
@@ -49,7 +48,7 @@ class ImageUpload extends Image {
         $extensionPosition = strrpos($filename, '.');
         $filenameWithoutExtension = substr($filename, 0, $extensionPosition);
 
-        $path = Yii::getAlias('@web') . 'uploads/';
+        $path = $this->getFolder();
         $pathImageZipName = $path . 'zip/' . $filenameWithoutExtension . '.zip';
 
         $zip = new ZipArchive();
@@ -60,7 +59,7 @@ class ImageUpload extends Image {
         return Yii::$app->response->sendFile($pathImageZipName);
     }
 
-    private function getFolder()
+    private function getFolder(): string
     {
         return Yii::getAlias('@web') . 'uploads/';
     }
@@ -78,12 +77,12 @@ class ImageUpload extends Image {
         }
     }
 
-    public function currentImage($file)
+    public function currentImage($file): string
     {
         return $this->translit($file->baseName) . '.' . $file->extension;
     }
 
-    public function translit($st)
+    public function translit($st): array|string|null
     {
         $st = mb_strtolower($st, "utf-8");
         $st = str_replace([
